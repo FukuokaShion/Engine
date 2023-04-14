@@ -1,183 +1,162 @@
-Ôªø#include<d3dcompiler.h>
-#include<Windows.h>
-#include <tchar.h>
-#include<iostream>
-#include<d3d12.h>
-#include<dxgi1_6.h>
-#include<cassert>
-#include<vector>
-#include<string>
-#include<DirectXMath.h>
-#include<DirectXTex.h>
-#pragma comment(lib,"d3dcompiler.lib")
-#pragma comment(lib,"d3d12.lib")
-#pragma comment(lib,"dxgi.lib")
-#include"Triangle.h"
-#include"object3d.h"
-#include"input.h"
-#include"WinApp.h"
-#include"DirectXCommon.h"
-#include"SpriteCommon.h"
-#include"Sprite.h"
 
-using namespace DirectX;
-using namespace std;
+#include "WinApp.h"
+#include "Input.h"
+#include "DirectXCommon.h"
+#include "FPS.h"
+#include "ImGuiManager.h"
+#include <imgui.h>
 
 
-//ÂÆöÊï∞„Éê„ÉÉ„Éï„Ç°Áî®„Éá„Éº„ÇøÊßãÈÄ†‰ΩìÔºà„Éû„ÉÜ„É™„Ç¢„É´Ôºâ
-struct ConstBufferDataMaterial {
-	XMFLOAT4 color;//Ëâ≤ÔºàRGBAÔºâ
-};
-
-//„Ç¶„Ç£„É≥„Éâ„Ç¶„Éó„É≠„Éº„Ç∏„É£„Éº
-LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wapram, LPARAM lparam) {
-	//„É°„ÉÉ„Çª„Éº„Ç∏„Å´Âøú„Åò„Å¶„Ç≤„Éº„É†Âõ∫Êúâ„ÅÆÂá¶ÁêÜ„ÇíË°å„ÅÜ
-	switch (msg)
-	{
-		//„Ç¶„Ç§„É≥„Éâ„Ç¶„ÅåÁ†¥Ê£Ñ„Åï„Çå„Åü
-	case WM_DESTROY:
-		//OS„Å´ÂØæ„Åó„Å¶„ÄÅ„Ç¢„Éó„É™„ÅÆÁµÇ‰∫Ü„Çí‰ºù„Åà„Çã
-		PostQuitMessage(0);
-		return 0;
-	}
-	return DefWindowProc(hwnd, msg, wapram, lparam);
-}
+#include "GameScene.h"
 
 
-//windows„Ç¢„Éó„É™„ÅÆ„Ç®„É≥„Éà„É™„Éº„Éù„Ç§„É≥„ÉàÔºàmainÈñ¢Êï∞Ôºâ
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-#pragma region Âü∫Áõ§„Ç∑„Çπ„ÉÜ„É†„ÅÆÂàùÊúüÂåñ
+
+int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
+
+#pragma region WindowsAPIèâä˙âªèàóù
+
+
+	//É|ÉCÉìÉ^
 	WinApp* winApp = nullptr;
-	//WindowsAPI„ÅÆÂàùÊúüÂåñ
-	winApp = new WinApp;
+	DirectXCommon* dxCommon = nullptr;
+	FPS* fps = new FPS;
+	Input* input = nullptr;
+	GameScene* gameScene = nullptr;
+
+	ImGuiManager* imgui = nullptr;
+
+	//windowsAPIÇÃèâä˙âª
+	winApp = new WinApp();
 	winApp->Initialize();
 
-	DirectXCommon* dxCommon = nullptr;
-	//DirectXÂàùÊúüÂåñÂá¶ÁêÜ
 	dxCommon = new DirectXCommon();
 	dxCommon->Initialize(winApp);
 
-	Input* input = nullptr;
-	//DirectInput„ÅÆÂàùÊúüÂåñ
-	input = new Input;
+	//ì¸óÕÇÃèâä˙âªÅ@
+	input = new Input();
 	input->Initialize(winApp);
 
-	SpriteCommon* spriteCommon = nullptr;
-	spriteCommon = new SpriteCommon;
-	spriteCommon->Initialize(dxCommon);
-
-	Sprite* UI = nullptr;
-	UI = new Sprite();
-	UI->Initialize(spriteCommon);
-	UI->SetPosition({ 0,0 });
-	UI->SetSize({ 1280.0f, 720.0f });
-
-	spriteCommon->Loadtexture(0, "background.png");
-	UI->SetTexIndex(0);
-
-#pragma endregion Âü∫Áõ§„Ç∑„Çπ„ÉÜ„É†„ÅÆÂàùÊúüÂåñ
-#pragma region ÊúÄÂàù„ÅÆ„Ç∑„Éº„É≥„ÅÆÂàùÊúüÂåñ
+	// ImGuiÇÃèâä˙âª
+	imgui = new ImGuiManager();
+	imgui->Initialize(winApp,dxCommon);
 
 
-#pragma endregion ÊúÄÂàù„ÅÆ„Ç∑„Éº„É≥„ÅÆÂàùÊúüÂåñ
-
-	MSG msg{};
-
-	HRESULT result;
 
 
-	//Ë®≠ÂÆö
 
-//----------------------„Ç≤„Éº„É†„É´„Éº„Éó-------------------------
+#pragma endregion
 
-	Object3d* obj1 = nullptr;
-	Model* model1 = nullptr;
+#pragma region DirectXèâä˙âªèàóù
+	// 3DÉIÉuÉWÉFÉNÉgê√ìIèâä˙âª
+	Object3d::StaticInitialize(dxCommon->GetDevice(), WinApp::window_width, WinApp::window_height);
+	//ÉpÅ[ÉeÉBÉNÉãê√ìIèâä˙âª
+	ParticleManager::StaticInitialize(dxCommon->GetDevice(), WinApp::window_width, WinApp::window_height);
 	
-	Object3d::StaticInitialize(dxCommon->GetDevice(), WinApp::window_width, WinApp::window_heigit);
-	obj1 = Object3d::Create();
 
-	Model::SetDevice(dxCommon->GetDevice());
-	model1 = Model::LoadFromOBJ("triangle_mat");
+#pragma endregion
 
-	obj1->SetModel(model1);
-	obj1->SetPosition({ -30,0,0 });
-	obj1->SetEye({0,0,-100});
+#pragma region ï`âÊèâä˙âªèàóù
 
+	////////////////////////////
+	//------âπê∫ì«Ç›çûÇ›--------//
+	///////////////////////////
 
-	Object3d* obj2 = nullptr;
-	Model* model2 = nullptr;
+	// ÉQÅ[ÉÄÉVÅ[ÉìÇÃèâä˙âª
+	gameScene = new GameScene();
+	gameScene->Initialize(dxCommon, input);
 
-	Object3d::StaticInitialize(dxCommon->GetDevice(), WinApp::window_width, WinApp::window_heigit);
-	obj2 = Object3d::Create();
+	//FPSïœÇ¶ÇΩÇ¢Ç∆Ç´
+	fps->SetFrameRate(60);
 
-	Model::SetDevice(dxCommon->GetDevice());
-	model2 = Model::LoadFromOBJ("cube");
-
-	obj2->SetModel(model2);
-
-	obj2->SetPosition({ 30,0,0 });
-	obj2->SetEye({0,0,-100});
-
+#pragma endregion
+	//ÉQÅ[ÉÄÉãÅ[Év
 	while (true) {
-#pragma region Âü∫Áõ§„Ç∑„Çπ„ÉÜ„É†„ÅÆÊõ¥Êñ∞
-		//√ó„Éú„Çø„É≥„ÅßÁµÇ‰∫Ü„É°„ÉÉ„Çª„Éº„Ç∏„Åå„Åç„Åü„Çâ„Ç≤„Éº„É†„É´„Éº„Éó„ÇíÊäú„Åë„Çã
+#pragma region ÉEÉBÉìÉhÉEÉÅÉbÉZÅ[ÉWèàóù
+
+		//ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™èIÇÌÇÈéûÇ…messageÇ™WM_QUITÇ…Ç»ÇÈ
 		if (winApp->ProcessMessage()) {
 			break;
 		}
-		//ÂÖ•Âäõ„ÅÆÊõ¥Êñ∞
-		input->Update();
-
-#pragma endregion Âü∫Áõ§„Ç∑„Çπ„ÉÜ„É†„ÅÆÊõ¥Êñ∞
-
-#pragma region ÊúÄÂàù„ÅÆ„Ç∑„Éº„É≥„ÅÆÊõ¥Êñ∞
-
-
-		obj1->Update();
-		obj2->Update();
-
-		if (input->PushKey(DIK_SPACE))
-		{
-			obj1->SetModel(model2);
-			obj2->SetModel(model1);
-		}
-		else {
-			obj1->SetModel(model1);
-			obj2->SetModel(model2);
+		if (input->PushKey(DIK_ESCAPE)) {
+			break;
 		}
 
 
+		fps->FpsControlBegin();
 
-#pragma endregion ÊúÄÂàù„ÅÆ„Ç∑„Éº„É≥„ÅÆÊõ¥Êñ∞
-		//ÊèèÁîªÂâçÂá¶ÁêÜ
+#pragma endregion
+
+#pragma region DirectXñàÉtÉåÅ[ÉÄèàóù
+		/////////////////////////////////////////////////////
+		//----------DireceXñàÉtÉåÅ[ÉÄèàóùÅ@Ç±Ç±Ç©ÇÁ------------//
+		///////////////////////////////////////////////////
+
+		//ì¸óÕÇÃçXêV
+		input->Update();	
+
+		// ÉQÅ[ÉÄÉVÅ[ÉìÇÃñàÉtÉåÅ[ÉÄèàóù
+		gameScene->Update();		
+
+		//////////////////////////////////////////////
+		//-------DireceXñàÉtÉåÅ[ÉÄèàóùÅ@Ç±Ç±Ç‹Ç≈--------//
+		////////////////////////////////////////////
+
+#pragma endregion
+
+#pragma region ÉOÉâÉtÉBÉbÉNÉXÉRÉ}ÉìÉh
+
+		//4.ï`âÊÉRÉ}ÉìÉhÇ±Ç±Ç©ÇÁ
 		dxCommon->PreDraw();
-		Object3d::PreDraw(dxCommon->GetCommandList());
 
-#pragma region ÊúÄÂàù„ÅÆ„Ç∑„Éº„É≥„ÅÆÊèèÁîª
-		obj1->Draw();
-		obj2->Draw();
+		// ImguiéÛïtäJén
+		imgui->Begin();
+		// ÉfÉÇÉEÉBÉìÉhÉEÇÃï\é¶ÉIÉì
+		ImGui::ShowDemoWindow();
 
-#pragma endregion ÊúÄÂàù„ÅÆ„Ç∑„Éº„É≥„ÅÆÊèèÁîª
+		// ÉQÅ[ÉÄÉVÅ[ÉìÇÃï`âÊ
+		gameScene->Draw();
 
-		//ÊèèÁîªÂæåÂá¶ÁêÜ
+
+		// ImguiéÛïtèIóπ
+		imgui->End();
+		// Imguiï`âÊ
+		imgui->Draw();
+
+		// ï`âÊèIóπ
 		dxCommon->PostDraw();
-		Object3d::PostDraw();
 
-		UI->Draw();
+		fps->FpsControlEnd();
+		//4.ï`âÊÉRÉ}ÉìÉhÇ±Ç±Ç‹Ç≈
+
+#pragma endregion
+
+#pragma region âÊñ ì¸ÇÍë÷Ç¶
+
+#pragma endregion
 	}
+#pragma region  WindowsAPIå„énññ
 
-#pragma region ÊúÄÂàù„ÅÆ„Ç∑„Éº„É≥„ÅÆÁµÇ‰∫Ü
+	/*ID3D12DebugDevice* debugInterface;
+	if (SUCCEEDED(dxCommon->GetDevice()->QueryInterface(&debugInterface))) {
+		debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+		debugInterface->Release();
+	}*/
 
+	delete gameScene;
 
-#pragma endregion ÊúÄÂàù„ÅÆ„Ç∑„Éº„É≥„ÅÆÁµÇ‰∫Ü
+	imgui->Finalize();
+	//WindowsAPIÇÃèIóπèàóù
+	winApp->Finalize();
+	delete imgui;
 
-#pragma region Âü∫Áõ§„Ç∑„Çπ„ÉÜ„É†„ÅÆÁµÇ‰∫Ü
+	//ì¸óÕäJï˙
 	delete input;
-
+	//WindowsAPIäJï˙
+	delete winApp;
 	delete dxCommon;
 
-	winApp->Finalize();
-
-	delete winApp;
-#pragma endregion Âü∫Áõ§„Ç∑„Çπ„ÉÜ„É†„ÅÆÁµÇ‰∫Ü
+	delete fps;
+	
+#pragma endregion
 	return 0;
 }
