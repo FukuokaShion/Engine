@@ -15,7 +15,9 @@ GameScene::~GameScene() {
 	delete camera;
 
 	delete floor;
+	delete floorMD;
 	delete skydome;
+	delete skydomeMD;
 }
 
 /// <summary>
