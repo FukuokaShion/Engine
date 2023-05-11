@@ -2,8 +2,8 @@
 #include "FbxLoader.h"
 
 /// <summary>
-	/// コンストクラタ
-	/// </summary>
+/// コンストクラタ
+/// </summary>
 GameScene::GameScene() {
 }
 
@@ -40,12 +40,14 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input) {
 
 	// カメラ生成
 	camera = new Camera(WinApp::window_width, WinApp::window_height);
-	camera->SetEye({0,3,-8});
+	camera->SetEye({0,3,-10});
 	camera->SetTarget({ 0,3,0 });
 
+	//カメラセット
 	ParticleManager::SetCamera(camera);
 	Object3d::SetCamera(camera);
 
+	//obj生成
 	floorMD = Model::LoadFromOBJ("floor");
 	floor = Object3d::Create();
 	floor->SetModel(floorMD);
@@ -57,20 +59,19 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input) {
 	skydome->wtf.scale = (Vector3{ 1000, 1000, 1000 });
 
 
-	// デバイスをセット
+	//デバイスをセット
 	FBXObject3d::SetDevice(dxCommon->GetDevice());
 	FBXObject3d::SetCamera(camera);
-	// グラフィックスパイプライン生成
+	//グラフィックスパイプライン生成
 	FBXObject3d::CreateGraphicsPipeline();
 
+	//fbx生成
 	fbxModel_ = FbxLoader::GetInstance()->LoadModelFromFile("Player");
-
-
 	fbxObject3d_ = new FBXObject3d;
 	fbxObject3d_->Initialize();
 	fbxObject3d_->SetModel(fbxModel_);
 	fbxObject3d_->SetScale({ 0.01,0.01,0.01 });
-	fbxObject3d_->SetPosition({ -10,10,40 });
+	fbxObject3d_->SetPosition({ 0,0,0 });
 	fbxObject3d_->PlayAnimation();
 	
 
@@ -86,8 +87,10 @@ void GameScene::Reset() {
 /// </summary>
 void GameScene::Update() {
 	camera->Update();
+
 	floor->Update();
 	skydome->Update();
+	
 	fbxObject3d_->Update();
 }
 
@@ -106,9 +109,9 @@ void GameScene::Draw() {
 	floor->Draw();
 	skydome->Draw();
 	fbxObject3d_->Draw(dxCommon->GetCommandList());
+
 	//3Dオブジェクト描画後処理
 	Object3d::PostDraw();
-
 
 	//// パーティクルの描画
 
@@ -117,5 +120,4 @@ void GameScene::Draw() {
 
 	// パーティクル描画後処理
 	ParticleManager::PostDraw();
-
 }

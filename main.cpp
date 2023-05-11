@@ -1,26 +1,24 @@
 #include "WinApp.h"
 #include "Input.h"
 #include "DirectXCommon.h"
-#include "FPS.h"
 #include "ImGuiManager.h"
 #include <imgui.h>
+#include "FbxLoader.h"
+#include "FPS.h"
 
 #include "GameScene.h"
-#include "FbxLoader.h"
 
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 #pragma region WindowsAPI初期化処理
-
-
 	//ポインタ
 	WinApp* winApp = nullptr;
 	DirectXCommon* dxCommon = nullptr;
 	FPS* fps = new FPS;
 	Input* input = nullptr;
-	GameScene* gameScene = nullptr;
-
 	ImGuiManager* imgui = nullptr;
+
+	GameScene* gameScene = nullptr;
 
 	//windowsAPIの初期化
 	winApp = new WinApp();
@@ -37,29 +35,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	imgui = new ImGuiManager();
 	imgui->Initialize(winApp,dxCommon);
 
-
 	FbxLoader::GetInstance()->Initialize(dxCommon->GetDevice());
-
-
-
 #pragma endregion
 
 #pragma region DirectX初期化処理
-	// 3Dオブジェクト静的初期化
+	//3Dオブジェクト静的初期化
 	Object3d::StaticInitialize(dxCommon->GetDevice(), WinApp::window_width, WinApp::window_height);
 	//パーティクル静的初期化
 	ParticleManager::StaticInitialize(dxCommon->GetDevice(), WinApp::window_width, WinApp::window_height);
-	
 
 #pragma endregion
 
 #pragma region 描画初期化処理
-
-	////////////////////////////
-	//------音声読み込み--------//
-	///////////////////////////
-
-	// ゲームシーンの初期化
+	//ゲームシーンの初期化
 	gameScene = new GameScene();
 	gameScene->Initialize(dxCommon, input);
 
@@ -74,57 +62,47 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//アプリケーションが終わる時にmessageがWM_QUITになる
 		if (winApp->ProcessMessage()) {
 			break;
-		}
-		if (input->PushKey(DIK_ESCAPE)) {
+		}if (input->PushKey(DIK_ESCAPE)) {
 			break;
 		}
-
 
 		fps->FpsControlBegin();
 
 #pragma endregion
 
 #pragma region DirectX毎フレーム処理
-		/////////////////////////////////////////////////////
-		//----------DireceX毎フレーム処理　ここから------------//
-		///////////////////////////////////////////////////
-
+		//DireceX毎フレーム処理
 		//入力の更新
 		input->Update();	
 
 		// ゲームシーンの毎フレーム処理
-		gameScene->Update();		
-
-		//////////////////////////////////////////////
-		//-------DireceX毎フレーム処理　ここまで--------//
-		////////////////////////////////////////////
+		gameScene->Update();
 
 #pragma endregion
 
 #pragma region グラフィックスコマンド
 
-		//4.描画コマンドここから
+		//描画コマンド
 		dxCommon->PreDraw();
 
-		// Imgui受付開始
+		//Imgui受付開始
 		imgui->Begin();
-		// デモウィンドウの表示オン
+		//デモウィンドウの表示オン
 		ImGui::ShowDemoWindow();
 
-		// ゲームシーンの描画
+		//ゲームシーンの描画
 		gameScene->Draw();
 
-
-		// Imgui受付終了
+		//Imgui受付終了
 		imgui->End();
-		// Imgui描画
+
+		//Imgui描画
 		imgui->Draw();
 
-		// 描画終了
+		//描画終了
 		dxCommon->PostDraw();
 
 		fps->FpsControlEnd();
-		//4.描画コマンドここまで
 
 #pragma endregion
 
@@ -133,17 +111,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #pragma endregion
 	}
 #pragma region  WindowsAPI後始末
-
-	/*ID3D12DebugDevice* debugInterface;
-	if (SUCCEEDED(dxCommon->GetDevice()->QueryInterface(&debugInterface))) {
-		debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
-		debugInterface->Release();
-	}*/
-
 	delete gameScene;
-
 	imgui->Finalize();
 	FbxLoader::GetInstance()->Finalize();
+
 	//WindowsAPIの終了処理
 	winApp->Finalize();
 	delete imgui;

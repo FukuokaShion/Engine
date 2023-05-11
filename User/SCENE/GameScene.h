@@ -1,20 +1,18 @@
 #pragma once
-
 #include "DirectXCommon.h"
-#include "Input.h"
-#include "Audio.h"
 #include <string>
-#include "Object3d.h"
+#include "Input.h"
+#include "Matrix4.h"
+
 #include "SpriteCommon.h"
 #include "Sprite.h"
+#include "ParticleManager.h"
+#include "Audio.h"
+
+#include "Camera.h"
+#include "Object3d.h"
 #include "Model.h"
 #include "FBXObject3d.h"
-
-#include "Matrix4.h"
-#include "Camera.h"
-
-#include "ParticleManager.h"
-
 
 /// <summary>
 /// ゲームシーン
@@ -22,7 +20,6 @@
 class GameScene
 {
 private: // 静的メンバ変数
-	//static const int debugTextTexNumber = 0;
 
 public: // メンバ関数
 
@@ -57,18 +54,16 @@ public:
 	//音を止める関数
 	IXAudio2SourceVoice* pSourceVoice[10] = { 0 };
 
-	
-private: // メンバ変数 (固定)
+private: //メンバ変数 (固定)
 	DirectXCommon* dxCommon = nullptr;
 	Input* input = nullptr;
 
 	SpriteCommon* spriteCommon = nullptr;
 	Audio* audio = nullptr;
 
-
-private:	//メンバ変数
 	const float PI = 3.141592;
 
+private://メンバ変数
 	//カメラ
 	Camera* camera = nullptr;
 
