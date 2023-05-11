@@ -8,6 +8,7 @@
 #include "SpriteCommon.h"
 #include "Sprite.h"
 #include "Model.h"
+#include "FBXObject3d.h"
 
 #include "Matrix4.h"
 #include "Camera.h"
@@ -74,8 +75,11 @@ private:	//ÉÅÉìÉoïœêî
 	//îwåiÇ‚è∞
 	Object3d* floor = nullptr;
 	Model* floorMD = nullptr;
-
 	Object3d* skydome = nullptr;
 	Model* skydomeMD = nullptr;
+
+	//fbx
+	FBXModel* fbxModel_ = nullptr;
+	FBXObject3d* fbxObject3d_ = nullptr;
 
 };

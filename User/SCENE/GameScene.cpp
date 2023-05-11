@@ -1,5 +1,5 @@
 #include "GameScene.h"
-
+#include "FbxLoader.h"
 
 /// <summary>
 	/// コンストクラタ
@@ -18,6 +18,9 @@ GameScene::~GameScene() {
 	delete floorMD;
 	delete skydome;
 	delete skydomeMD;
+
+	delete fbxObject3d_;
+	delete fbxModel_;
 }
 
 /// <summary>
@@ -37,6 +40,8 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input) {
 
 	// カメラ生成
 	camera = new Camera(WinApp::window_width, WinApp::window_height);
+	camera->SetEye({0,3,-8});
+	camera->SetTarget({ 0,3,0 });
 
 	ParticleManager::SetCamera(camera);
 	Object3d::SetCamera(camera);
@@ -51,6 +56,24 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input) {
 	skydome->SetModel(skydomeMD);
 	skydome->wtf.scale = (Vector3{ 1000, 1000, 1000 });
 
+
+	// デバイスをセット
+	FBXObject3d::SetDevice(dxCommon->GetDevice());
+	FBXObject3d::SetCamera(camera);
+	// グラフィックスパイプライン生成
+	FBXObject3d::CreateGraphicsPipeline();
+
+	fbxModel_ = FbxLoader::GetInstance()->LoadModelFromFile("Player");
+
+
+	fbxObject3d_ = new FBXObject3d;
+	fbxObject3d_->Initialize();
+	fbxObject3d_->SetModel(fbxModel_);
+	fbxObject3d_->SetScale({ 0.01,0.01,0.01 });
+	fbxObject3d_->SetPosition({ -10,10,40 });
+	fbxObject3d_->PlayAnimation();
+	
+
 	Reset();
 }
 
@@ -62,9 +85,10 @@ void GameScene::Reset() {
 /// 毎フレーム処理
 /// </summary>
 void GameScene::Update() {
-
+	camera->Update();
 	floor->Update();
 	skydome->Update();
+	fbxObject3d_->Update();
 }
 
 /// <summary>
@@ -81,6 +105,7 @@ void GameScene::Draw() {
 	//// 3Dオブクジェクトの描画
 	floor->Draw();
 	skydome->Draw();
+	fbxObject3d_->Draw(dxCommon->GetCommandList());
 	//3Dオブジェクト描画後処理
 	Object3d::PostDraw();
 

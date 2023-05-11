@@ -175,6 +175,15 @@
     <ClCompile Include="Engine\3D\Particle\Particle.cpp">
       <Filter>Engine\ソースファイル\3D\Particle</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\3D\FbxLoader.cpp">
+      <Filter>Engine\ソースファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3D\FBXModel.cpp">
+      <Filter>Engine\ソースファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3D\FBXObject3d.cpp">
+      <Filter>Engine\ソースファイル\3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\BASE\FPS.h">
@@ -254,6 +263,15 @@
     </ClInclude>
     <ClInclude Include="Engine\3D\Particle\Particle.h">
       <Filter>Engine\ヘッダーファイル\3D\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\FbxLoader.h">
+      <Filter>Engine\ヘッダーファイル\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\FBXModel.h">
+      <Filter>Engine\ヘッダーファイル\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\FBXObject3d.h">
+      <Filter>Engine\ヘッダーファイル\3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

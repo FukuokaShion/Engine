@@ -6,6 +6,7 @@
 #include <imgui.h>
 
 #include "GameScene.h"
+#include "FbxLoader.h"
 
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
@@ -37,6 +38,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	imgui->Initialize(winApp,dxCommon);
 
 
+	FbxLoader::GetInstance()->Initialize(dxCommon->GetDevice());
 
 
 
@@ -141,6 +143,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	delete gameScene;
 
 	imgui->Finalize();
+	FbxLoader::GetInstance()->Finalize();
 	//WindowsAPI‚ÌI—¹ˆ—
 	winApp->Finalize();
 	delete imgui;
