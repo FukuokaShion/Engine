@@ -66,12 +66,12 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input) {
 	FBXObject3d::CreateGraphicsPipeline();
 
 	//fbx生成
-	fbxModel_ = FbxLoader::GetInstance()->LoadModelFromFile("Player");
+	fbxModel_ = FbxLoader::GetInstance()->LoadModelFromFile("player");
 	fbxObject3d_ = new FBXObject3d;
 	fbxObject3d_->Initialize();
 	fbxObject3d_->SetModel(fbxModel_);
-	fbxObject3d_->SetScale({ 0.01,0.01,0.01 });
-	fbxObject3d_->SetPosition({ 0,0,0 });
+	fbxObject3d_->wtf.scale = { 0.01f,0.01f,0.01f };
+	fbxObject3d_->wtf.position = { 0,3,0 };
 	fbxObject3d_->PlayAnimation();
 	
 
@@ -90,7 +90,8 @@ void GameScene::Update() {
 
 	floor->Update();
 	skydome->Update();
-	
+
+	fbxObject3d_->wtf.position += { 0.0f, 0.1f, 0.0f };
 	fbxObject3d_->Update();
 }
 

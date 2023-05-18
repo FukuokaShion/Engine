@@ -1,15 +1,21 @@
 #pragma once
-#include "FBXModel.h"
-#include "Camera.h"
-
 #include <Windows.h>
 #include <wrl.h>
 #include <d3d12.h>
 #include <d3dx12.h>
-#include <DirectXMath.h>
 #include <string>
-#include "FbxLoader.h"
 
+#include <DirectXMath.h>
+#include "Vector3.h"
+#include "Vector4.h"
+#include "Matrix4.h"
+#include "Affin.h"
+
+#include "FbxLoader.h"
+#include "FBXModel.h"
+
+#include "Camera.h"
+#include "Transform.h"
 
 class FBXObject3d
 {
@@ -22,14 +28,13 @@ protected: // エイリアス
 	using XMFLOAT4 = DirectX::XMFLOAT4;
 	using XMMATRIX = DirectX::XMMATRIX;
 
-public: // サブクラス
-// 定数バッファ用データ構造体（座標変換行列用）
-	struct ConstBufferDataTransform
+public:
+	// 定数バッファ用データ構造体
+	struct ConstBufferDataB0
 	{
-		XMMATRIX viewproj;    // ビュープロジェクション行列
-		XMMATRIX world; // ワールド行列
-		XMFLOAT3 cameraPos; // カメラ座標（ワールド座標）
+		Matrix4 mat;	// ３Ｄ変換行列
 	};
+
 	//ボーンの最大数
 	static const int MAX_BONES = 32;
 
@@ -76,24 +81,12 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
+	void UpdateMat();
+
 	/// <summary>
 	/// 描画
 	/// </summary>
 	void Draw(ID3D12GraphicsCommandList* cmdList);
-
-
-	/// <summary>
-	/// デカさの設定
-	/// </summary>
-	/// <param name="position">座標</param>
-	void SetScale(const XMFLOAT3& scale) { this->scale = scale; }
-
-	/// <summary>
-	/// 座標の設定
-	/// </summary>
-	/// <param name="position">座標</param>
-	void SetPosition(const XMFLOAT3& position) { this->position = position; }
-
 
 	void SetModel(FBXModel* fbxmodel) { this->fbxmodel = fbxmodel; }
 
@@ -103,18 +96,9 @@ public: // メンバ関数
 	void PlayAnimation();
 
 protected: // メンバ変数
-	// 定数バッファ
-	ComPtr<ID3D12Resource> constBuffTransform;
+	ComPtr<ID3D12Resource> constBuffB0; // 定数バッファ
 	// 定数バッファ(スキン)
 	ComPtr<ID3D12Resource> constBuffSkin;
-	// ローカルスケール
-	XMFLOAT3 scale = { 1,1,1 };
-	// X,Y,Z軸回りのローカル回転角
-	XMFLOAT3 rotation = { 0,0,0 };
-	// ローカル座標
-	XMFLOAT3 position = { 0,0,0 };
-	// ローカルワールド変換行列
-	XMMATRIX matWorld;
 	// モデル
 	FBXModel* fbxmodel = nullptr;
 
@@ -128,4 +112,7 @@ protected: // メンバ変数
 	FbxTime currentTime;
 	//アニメーション再生中
 	bool isPlay = false;
+
+public:
+	Transform wtf;
 };

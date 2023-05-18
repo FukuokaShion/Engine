@@ -1,8 +1,6 @@
 cbuffer cbuff0 : register(b0)
 {
-	matrix viewproj; // ビュープロジェクション行列
-	matrix world; // ワールド行列
-	float3 cameraPos; // カメラ座標（ワールド座標）
+	matrix mat; // ３Ｄ変換行列
 };
 
 //ボーンの最大数
