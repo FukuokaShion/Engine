@@ -205,23 +205,8 @@ void FBXObject3d::Initialize()
 
 
 	//1フレーム分の時間を60FPSで設定
-	frameTime.SetTime(0, 0, 0, 1, 0, FbxTime::EMode::eFrames120);
+	frameTime.SetTime(0, 0, 0, 1, 0, FbxTime::EMode::eFrames60);
 
-}
-
-void  FBXObject3d::UpdateMat() {
-	Matrix4 matScale, matRot, matTrans;
-	// スケール、回転、平行移動行列の計算
-	matScale = Affin::matScale(wtf.scale.x, wtf.scale.y, wtf.scale.z);
-	matRot = Affin::matUnit();
-	matRot *= Affin::matRotation(wtf.rotation);
-	matTrans = Affin::matTrans(wtf.position.x, wtf.position.y, wtf.position.z);
-
-	// ワールド行列の合成
-	wtf.matWorld = Affin::matUnit(); // 変形をリセット
-	wtf.matWorld *= matScale; // ワールド行列にスケーリングを反映
-	wtf.matWorld *= matRot; // ワールド行列に回転を反映
-	wtf.matWorld *= matTrans; // ワールド行列に平行移動を反映
 }
 
 void FBXObject3d::Update(){
@@ -229,7 +214,7 @@ void FBXObject3d::Update(){
 	Matrix4 resultMat;
 	resultMat = Affin::matUnit();
 
-	UpdateMat();
+	wtf.UpdateMat();
 
 	// 定数バッファへデータ転送
 	ConstBufferDataB0* constMap = nullptr;
@@ -247,7 +232,12 @@ void FBXObject3d::Update(){
 		currentTime += frameTime;
 		//最後まで進めたら先頭に戻る
 		if (currentTime > endTime) {
-			currentTime = startTime;
+			if (isLoop) {
+				currentTime = startTime;
+			}else {
+				isPlay = false;
+				isFin = true;
+			}
 		}
 	}
 
@@ -288,8 +278,7 @@ void FBXObject3d::Draw(ID3D12GraphicsCommandList* cmdList)
 	fbxmodel->Draw(cmdList);
 }
 
-void FBXObject3d::PlayAnimation()
-{
+void FBXObject3d::PlayAnimation(bool isLoop){
 	FbxScene* fbxScene = fbxmodel->GetFbxScene();
 	//0番のアニメーションを取得
 	FbxAnimStack* animstack = fbxScene->GetSrcObject<FbxAnimStack>(0);
@@ -306,5 +295,7 @@ void FBXObject3d::PlayAnimation()
 	currentTime = startTime;
 	//再生中にする
 	isPlay = true;
-
+	isFin = false;
+	//ループ再生する
+	this->isLoop = isLoop;
 }

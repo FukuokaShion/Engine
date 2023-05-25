@@ -81,8 +81,6 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
-	void UpdateMat();
-
 	/// <summary>
 	/// 描画
 	/// </summary>
@@ -93,7 +91,11 @@ public: // メンバ関数
 	/// <summary>
 	/// アニメーション開始
 	/// </summary>
-	void PlayAnimation();
+	void PlayAnimation(bool isLoop = true);
+
+	void StopAnimation() { isPlay = false; };
+
+	bool GetAnimationFin() { return isFin; };
 
 protected: // メンバ変数
 	ComPtr<ID3D12Resource> constBuffB0; // 定数バッファ
@@ -110,8 +112,13 @@ protected: // メンバ変数
 	FbxTime endTime;
 	//現在時間(アニメーション)
 	FbxTime currentTime;
+	int frame = 0;
 	//アニメーション再生中
 	bool isPlay = false;
+	//アニメーションループ
+	bool isLoop;
+	//アニメーション終了
+	bool isFin;
 
 public:
 	Transform wtf;

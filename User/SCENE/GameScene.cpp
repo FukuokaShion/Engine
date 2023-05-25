@@ -46,8 +46,14 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input) {
 	//カメラセット
 	ParticleManager::SetCamera(camera);
 	Object3d::SetCamera(camera);
+	FBXObject3d::SetCamera(camera);
 
-	//obj生成
+	//デバイスをセット
+	FBXObject3d::SetDevice(dxCommon->GetDevice());
+	//グラフィックスパイプライン生成
+	FBXObject3d::CreateGraphicsPipeline();
+
+	//背景
 	floorMD = Model::LoadFromOBJ("floor");
 	floor = Object3d::Create();
 	floor->SetModel(floorMD);
@@ -58,22 +64,13 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input) {
 	skydome->SetModel(skydomeMD);
 	skydome->wtf.scale = (Vector3{ 1000, 1000, 1000 });
 
-
-	//デバイスをセット
-	FBXObject3d::SetDevice(dxCommon->GetDevice());
-	FBXObject3d::SetCamera(camera);
-	//グラフィックスパイプライン生成
-	FBXObject3d::CreateGraphicsPipeline();
-
 	//fbx生成
-	fbxModel_ = FbxLoader::GetInstance()->LoadModelFromFile("player");
+	fbxModel_ = FbxLoader::GetInstance()->LoadModelFromFile("weakAttack1");
 	fbxObject3d_ = new FBXObject3d;
 	fbxObject3d_->Initialize();
 	fbxObject3d_->SetModel(fbxModel_);
-	fbxObject3d_->wtf.scale = { 0.01f,0.01f,0.01f };
-	fbxObject3d_->wtf.position = { 0,3,0 };
+	fbxObject3d_->wtf.rotation = { 0,PI,0 };
 	fbxObject3d_->PlayAnimation();
-	
 
 	Reset();
 }
@@ -91,7 +88,7 @@ void GameScene::Update() {
 	floor->Update();
 	skydome->Update();
 
-	fbxObject3d_->wtf.position += { 0.0f, 0.1f, 0.0f };
+	fbxObject3d_->wtf.position += {0, 0.2f, 0};
 	fbxObject3d_->Update();
 }
 
