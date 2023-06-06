@@ -91,7 +91,7 @@ public: // メンバ関数
 	/// <summary>
 	/// アニメーション開始
 	/// </summary>
-	void PlayAnimation(bool isLoop = true);
+	void PlayAnimation(float speed = 1.0f, bool isLoop = true);
 
 	void StopAnimation() { isPlay = false; };
 
@@ -106,6 +106,7 @@ protected: // メンバ変数
 
 	//1フレームの時間
 	FbxTime frameTime;
+	FbxTime animationTime;
 	//アニメーション開始時間
 	FbxTime startTime;
 	//アニメーション終了時間

@@ -65,12 +65,17 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input) {
 	skydome->wtf.scale = (Vector3{ 1000, 1000, 1000 });
 
 	//fbx生成
-	fbxModel_ = FbxLoader::GetInstance()->LoadModelFromFile("weakAttack1");
+	fbxModel_ = FbxLoader::GetInstance()->LoadModelFromFile("strongAttack");
 	fbxObject3d_ = new FBXObject3d;
 	fbxObject3d_->Initialize();
 	fbxObject3d_->SetModel(fbxModel_);
 	fbxObject3d_->wtf.rotation = { 0,PI,0 };
-	fbxObject3d_->PlayAnimation();
+	
+
+	//52,26,44,50 アニメーションのフレーム数
+	//2.5, 1, 2, 2 暫定の速度
+
+	animeSpeed = 1.0f;
 
 	Reset();
 }
@@ -84,12 +89,21 @@ void GameScene::Reset() {
 /// </summary>
 void GameScene::Update() {
 	camera->Update();
-
 	floor->Update();
 	skydome->Update();
 
-	fbxObject3d_->wtf.position += {0, 0.2f, 0};
+
+	if(input->TriggerKey(DIK_D)){
+		animeSpeed += 0.05f;
+	}else if (input->TriggerKey(DIK_A)) {
+		animeSpeed -= 0.05f;
+	}
+
+	if (input->TriggerKey(DIK_SPACE)) {
+		fbxObject3d_->PlayAnimation(animeSpeed, false);
+	}
 	fbxObject3d_->Update();
+
 }
 
 /// <summary>

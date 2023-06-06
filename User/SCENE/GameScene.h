@@ -77,6 +77,5 @@ private://ƒƒ“ƒo•Ï”
 	FBXModel* fbxModel_ = nullptr;
 	FBXObject3d* fbxObject3d_ = nullptr;
 
-	int frame;
-	const int maxframe = 269;
+	float animeSpeed;
 };
