@@ -279,11 +279,11 @@ void FBXObject3d::Draw(ID3D12GraphicsCommandList* cmdList)
 	fbxmodel->Draw(cmdList);
 }
 
-void FBXObject3d::PlayAnimation(float speed, bool isLoop){
+void FBXObject3d::PlayAnimation(int animationNum, float speed, bool isLoop){
 	animationTime = frameTime * speed;
 	FbxScene* fbxScene = fbxmodel->GetFbxScene();
-	//0番のアニメーションを取得
-	FbxAnimStack* animstack = fbxScene->GetSrcObject<FbxAnimStack>(0);
+	//アニメーションを取得
+	FbxAnimStack* animstack = fbxScene->GetSrcObject<FbxAnimStack>(animationNum);
 	//アニメーションの名前取得
 	const char* animstackname = animstack->GetName();
 	//アニメーションの時間情報

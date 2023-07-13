@@ -100,7 +100,7 @@ void GameScene::Update() {
 	}
 
 	if (input->TriggerKey(DIK_SPACE)) {
-		fbxObject3d_->PlayAnimation(animeSpeed, false);
+		fbxObject3d_->PlayAnimation(0, animeSpeed, false);
 	}
 	fbxObject3d_->Update();
 

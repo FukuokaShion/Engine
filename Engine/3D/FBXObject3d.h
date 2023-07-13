@@ -91,7 +91,7 @@ public: // メンバ関数
 	/// <summary>
 	/// アニメーション開始
 	/// </summary>
-	void PlayAnimation(float speed = 1.0f, bool isLoop = true);
+	void PlayAnimation(int animationNum = 0, float speed = 1.0f, bool isLoop = true);
 
 	void StopAnimation() { isPlay = false; };
 
