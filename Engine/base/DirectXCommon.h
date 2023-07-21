@@ -44,6 +44,13 @@ public://メンバ関数
 	//バックバッファの数を取得
 	size_t GetBackBufferCount() const { return backBuffers.size(); }
 
+
+	//デスクリプタヒープ
+	ID3D12DescriptorHeap* GetDsvHeap() const { return dsvHeap.Get(); }
+
+	//デプスバッファ
+	ID3D12Resource* GetDepthBuff() const { return depthBuff.Get(); }
+
 private:
 	//DirectX12デバイス
 	ComPtr<ID3D12Device> device;

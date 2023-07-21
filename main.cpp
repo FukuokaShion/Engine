@@ -5,6 +5,7 @@
 #include <imgui.h>
 #include "FbxLoader.h"
 #include "FPS.h"
+#include"PostEffect.h"
 
 #include "GameScene.h"
 
@@ -17,6 +18,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	FPS* fps = new FPS;
 	Input* input = nullptr;
 	ImGuiManager* imgui = nullptr;
+	PostEffect* postEffect = nullptr;
+
 
 	GameScene* gameScene = nullptr;
 
@@ -34,6 +37,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// ImGuiの初期化
 	imgui = new ImGuiManager();
 	imgui->Initialize(winApp,dxCommon);
+
+	// ポストエフェクトの初期化
+	postEffect = new PostEffect();
+	postEffect->Initialize(dxCommon, 1280, 720);
 
 	FbxLoader::GetInstance()->Initialize(dxCommon->GetDevice());
 #pragma endregion
@@ -82,16 +89,22 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 #pragma region グラフィックスコマンド
 
-		//描画コマンド
-		dxCommon->PreDraw();
+	
 
 		//Imgui受付開始
 		imgui->Begin();
 		//デモウィンドウの表示オン
 		ImGui::ShowDemoWindow();
 
-		//ゲームシーンの描画
+		// ゲームシーンの描画
+		postEffect->PreDrawScene(dxCommon->GetCommandList());
 		gameScene->Draw();
+		postEffect->PostDrawScene();
+
+		//描画コマンド
+		dxCommon->PreDraw();
+
+		postEffect->Draw(dxCommon->GetCommandList());
 
 		//Imgui受付終了
 		imgui->End();
@@ -118,7 +131,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//WindowsAPIの終了処理
 	winApp->Finalize();
 	delete imgui;
-
+	delete postEffect;
 	//入力開放
 	delete input;
 	//WindowsAPI開放

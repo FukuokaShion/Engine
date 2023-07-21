@@ -65,7 +65,7 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input) {
 	skydome->wtf.scale = (Vector3{ 1000, 1000, 1000 });
 
 	//fbx生成
-	fbxModel_ = FbxLoader::GetInstance()->LoadModelFromFile("strongAttack");
+	fbxModel_ = FbxLoader::GetInstance()->LoadModelFromFile("player");
 	fbxObject3d_ = new FBXObject3d;
 	fbxObject3d_->Initialize();
 	fbxObject3d_->SetModel(fbxModel_);
@@ -100,7 +100,7 @@ void GameScene::Update() {
 	}
 
 	if (input->TriggerKey(DIK_SPACE)) {
-		fbxObject3d_->PlayAnimation(0, animeSpeed, false);
+		fbxObject3d_->PlayAnimation(0, animeSpeed, true);
 	}
 	fbxObject3d_->Update();
 
